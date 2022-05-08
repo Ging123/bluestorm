@@ -1,7 +1,9 @@
 from utils.response import error_response
 from django.http import HttpResponse
+
 from libs.encrypy import Bcrypt
 from decouple import config
+
 from ...models import User
 
 class CreateUserService:
