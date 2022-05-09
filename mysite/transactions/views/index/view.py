@@ -16,4 +16,4 @@ def _get(request):
     status=400
   )
 
-  return transactions.get(filter_data.data['page'])
+  return transactions.get(request.GET.get('page'))

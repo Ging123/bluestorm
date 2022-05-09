@@ -8,5 +8,10 @@ class Jwt:
 
   
   def decode(self, token:str, secret:str):
-    data = jwt.decode(token, secret, algorithm="HS256")
+    data = jwt.decode(
+      token, 
+      secret, 
+      algorithm="HS256", 
+      options={ "verify_signature": False }
+    )
     return data

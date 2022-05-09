@@ -11,6 +11,8 @@ import json
 
 class LoginUserService:
 
+  bcrypt = Bcrypt()
+
   def login(self, email:str, password:str):
     user_found = self._get_user_by_email(email)
     if not user_found: return self._email_doesnt_exists_error()
@@ -40,9 +42,8 @@ class LoginUserService:
 
 
   def _verify_if_password_match(self, text_password:str, hashed_password:str):
-    bcrypt = Bcrypt()
     salt = config('PASSWORD_SALT')
-    return bcrypt.match(text_password, hashed_password, salt)
+    return self.bcrypt.match(text_password, hashed_password, salt)
 
   
   def _wrong_password_error(self):
@@ -53,15 +54,18 @@ class LoginUserService:
   
   def _login_user(self, user):
     token = self._create_token(user)
-    user.token = token
+    user.token = token['hash']
 
     user.save()
-    return token
+    return token['text']
 
 
   def _create_token(self, user):
     jwt = Jwt()
     secret = config('LOGIN_TOKEN_SECRET')
 
+    salt = config('AUTH_TOKEN_SALT')
     token = jwt.encode({ 'email':user.email }, secret)
-    return token
+
+    hash_token = self.bcrypt.hash_value(token, salt)
+    return { 'text':token, 'hash':hash_token }
