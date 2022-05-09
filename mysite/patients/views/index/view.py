@@ -17,4 +17,9 @@ def _get(request):
     status=400
   )
 
-  return patient.get( request.GET )
+  return patient.get( 
+    request.GET.get('page'),
+    request.GET.get('name'),
+    request.GET.get('birthday'),
+    request.GET.get('sort_by')
+  )

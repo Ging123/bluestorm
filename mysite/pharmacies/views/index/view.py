@@ -17,4 +17,9 @@ def _get(request):
     status=400
   )
 
-  return pharmacies.get( request.GET )
+  return pharmacies.get( 
+    request.GET.get('page'),
+    request.GET.get('name'),
+    request.GET.get('city'),
+    request.GET.get('sort_by')
+  )

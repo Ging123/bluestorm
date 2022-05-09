@@ -12,6 +12,6 @@ class Patient(models.Model):
     null=False
   )
 
-  birthday = models.DateTimeField(
+  birthday = models.DateField(
     null=False
   )

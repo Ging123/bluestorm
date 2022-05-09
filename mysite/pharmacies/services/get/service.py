@@ -1,31 +1,18 @@
+from django.core.paginator import Paginator
 from django.http import HttpResponse
+
+from django.core import serializers
 from ...models import Pharmacy
 
 class GetPharmaciesService:
 
-  def get(self, filters):
-    filters = self._validate_filters(filters)
-    
-    pharmacies = self._get_pharmacies(
-      filters['page'],
-      filters['name'],
-      filters['city'],
-      filters['sort_by']
-    )
+  def get(self, page=None, name=None, city=None, sort_by=None):
+    page = self._validate_page(page)
+    sort_by = self._validate_sort_by(sort_by)
+    pharmacies = self._get_pharmacies( page, name, city, sort_by )
 
-    return HttpResponse(pharmacies)
-
-
-  def _validate_filters(self, filters):
-    page = self._validate_page(filters.get('page'))
-    sort_by = self._validate_sort_by(filters.get('sort_by'))
-
-    return {
-      'page':page,
-      'name':filters.get('name'),
-      'city':filters.get('city'),
-      'sort_by':sort_by
-    }
+    data = serializers.serialize('json', pharmacies)
+    return HttpResponse(data, content_type='application/json') 
 
 
   def _validate_page(self, page):
@@ -40,12 +27,38 @@ class GetPharmaciesService:
 
 
   def _get_pharmacies(self, page, name, city, sort_by):
-    limit = 20
+    if name and city: 
+      return self._get_pharmacies_by_name_and_city(page, name, city, sort_by)
 
-    return (
-      Pharmacy
-        .objects
-        .filter(name=name, city=city)
-        .order_by(sort_by)
-        [ page:limit ]
-    )
+    if name: return self._get_pharmacies_by_name(page, name, sort_by)
+    if city: return self._get_pharmacies_by_city(page, city, sort_by)
+
+    return self._get_all_pharmacies(page, sort_by)
+      
+    
+  def _get_pharmacies_by_name_and_city(self, page, name, city, sort_by):
+    limit = 20
+    pharmacies = Pharmacy.objects.filter(name=name, city=city).order_by(sort_by)
+    paginator = Paginator(pharmacies, limit)
+    return paginator.page(page).object_list
+
+  
+  def _get_pharmacies_by_name(self, page, name, sort_by):
+    limit = 20
+    pharmacies = Pharmacy.objects.filter(name=name).order_by(sort_by)
+    paginator = Paginator(pharmacies, limit)
+    return paginator.page(page).object_list
+
+  
+  def _get_pharmacies_by_city(self, page, city, sort_by):
+    limit = 20
+    pharmacies = Pharmacy.objects.filter(city=city).order_by(sort_by)
+    paginator = Paginator(pharmacies, limit)
+    return paginator.page(page).object_list
+
+
+  def _get_all_pharmacies(self, page, sort_by): 
+    limit = 20
+    pharmacies = Pharmacy.objects.filter().order_by(sort_by)
+    paginator = Paginator(pharmacies, limit)
+    return paginator.page(page).object_list
