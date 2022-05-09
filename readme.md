@@ -77,4 +77,6 @@ Para desenvolver a minha solução eu primeiro separei as funcionalidades que eu
 - Essenciais: Sem essas funcionalidades a aplicação não irá funcionar.
 - Importantes: É possível usar a aplicação sem essas funcionalidades porém o usuário não terá uma experiência tão agradavel.
 - Extra: Funcionalidade que podem ser trabalhadas em próximas versões da aplicação
-Após eu definir as funcionalidades, eu comecei a escolher as tecnológias que eu iria utilizar. Como eu tava afim de aprender um framework novo eu escolhi o django pois ele parecia muito bom para trabalhar com aplicações rest e já tinha um sisteminha de migrations para facilitar meu trabalho com o sqlite.
+Após eu definir as funcionalidades, eu comecei a escolher as tecnológias que eu iria utilizar.
+ 
+Como eu tava afim de aprender um framework novo eu escolhi o django pois ele parecia muito bom para trabalhar com aplicações rest e já tinha um sisteminha de migrations para facilitar meu trabalho com o sqlite.
