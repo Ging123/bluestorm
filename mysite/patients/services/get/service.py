@@ -1,18 +1,19 @@
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 
-from django.core import serializers
 from ...models import Patient
+import json
 
 class GetPatientsService:
 
   def get(self, page=None, name=None, birthday=None, sort_by=None):
     page = self._validate_page(page)
     sort_by = self._validate_sort_by(sort_by)
-    patients = self._get_patients( page, name, birthday, sort_by )
 
-    data = serializers.serialize('json', patients)
-    return HttpResponse(data, content_type='application/json') 
+    patients = self._get_patients( page, name, birthday, sort_by )
+    data = self._organizate_data(patients)
+
+    return HttpResponse(json.dumps(data)) 
 
   
   def _validate_page(self, page):
@@ -62,3 +63,17 @@ class GetPatientsService:
     patients = Patient.objects.filter().order_by(sort_by)
     paginator = Paginator(patients, limit)
     return paginator.page(page).object_list
+
+  
+  def _organizate_data(self, patients):
+    data = []
+
+    for patient in patients:
+      data.append({
+        'id':patient.id,
+        'name':patient.name,
+        'last_name':patient.last_name,
+        'birthday':patient.birthday.strftime('%d/%m/%Y')
+      })
+
+    return data

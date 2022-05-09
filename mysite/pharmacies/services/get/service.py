@@ -1,18 +1,19 @@
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 
-from django.core import serializers
 from ...models import Pharmacy
+import json
 
 class GetPharmaciesService:
 
   def get(self, page=None, name=None, city=None, sort_by=None):
     page = self._validate_page(page)
     sort_by = self._validate_sort_by(sort_by)
-    pharmacies = self._get_pharmacies( page, name, city, sort_by )
 
-    data = serializers.serialize('json', pharmacies)
-    return HttpResponse(data, content_type='application/json') 
+    pharmacies = self._get_pharmacies( page, name, city, sort_by)
+    pharmacies = self._organizate_data(pharmacies)
+    
+    return HttpResponse(json.dumps(pharmacies)) 
 
 
   def _validate_page(self, page):
@@ -62,3 +63,16 @@ class GetPharmaciesService:
     pharmacies = Pharmacy.objects.filter().order_by(sort_by)
     paginator = Paginator(pharmacies, limit)
     return paginator.page(page).object_list
+
+  
+  def _organizate_data(self, pharmacies):
+    data = []
+
+    for pharmacy in pharmacies:
+      data.append({
+        'id':pharmacy.id,
+        'name':pharmacy.name,
+        'city':pharmacy.city
+      })
+
+    return data

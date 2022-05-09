@@ -8,4 +8,10 @@ sqlite3 db.sqlite3
 
 python manage.py test users.tests.create_user
 
-INSERT INTO patients_patient (name, last_name, birthday) VALUES('aa', 'bb', '2000-05-01')
+INSERT INTO transactions_transaction (patient_id_id, pharmacy_id_id, quantity, date) VALUES(8, 8, 2000, '2019-12-16');
+
+PRAGMA table_info(transactions_transaction);
+
+SELECT * FROM transactions_transaction;
+
+DELETE FROM pharmacies_pharmacy WHERE city = 'Rio Grande do Norte';
